@@ -8,8 +8,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY src/ ./src/
 
-Env Enviorment=docker
-Env APP_Version=1.0.0
+ENV Enviorment=docker
+ENV APP_Version=1.0.0
+
+EXPOSE 5000
 
 ENTRYPOINT ["gunicorn"]
 

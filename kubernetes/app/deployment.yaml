@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devops-lab-api-app
+  labels:
+    env: dev
+    app: app
+  namespace: dev
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: app
+      env: dev
+  template:
+    metadata:
+      name: devops-lab-api-app
+      labels:
+        app: app
+        env: dev
+    spec:
+      restartPolicy: Always
+      imagePullSecrets:
+        - name: dockerhub-credentials
+      containers:
+      - name: devops-lab-api-app
+        image: vinodhk92/devops-lab-api:1.0.4
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+        envFrom:
+          - configMapRef:
+              name: devops-lab-api-cfg
+          - secretRef:
+              name: devops-lab-api-secret
+        resources:
+          requests:
+            cpu: "100m" 
+            memory: "64Mi"
+          limits:
+            cpu: "200m"
+            memory: "128Mi"
+        readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 3
+        livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 3
+        volumeMounts:
+          - mountPath: /data 
+            name: data-volume
+      volumes:
+        - name: data-volume
+          hostPath:
+            path: /data
+            type: DirectoryOrCreate

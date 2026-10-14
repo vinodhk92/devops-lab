@@ -1,0 +1,14 @@
+replicaCount: 2
+image:
+  repository: vinodhk92/devops-lab-api
+  tag: "1.0.4"
+  pullPolicy: Always
+ingress:
+  enabled: false
+resources:
+  requests:
+    cpu: "100m"
+    memory: "64Mi"
+  limits:
+    cpu: "200m"
+    memory: "128Mi"

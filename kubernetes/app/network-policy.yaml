@@ -1,0 +1,39 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: devops-lab-api-np
+  namespace: dev
+spec:
+  podSelector:
+    matchLabels:
+      app: app
+      env: dev
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              run: net-test
+          namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: dev
+        - ipBlock:
+            cidr: 192.168.1.0/24
+      ports:
+        - protocol: TCP
+          port: 5000
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: storage-staetful-demo
+          namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: dev
+      ports:
+        - protocol: TCP
+          port: 3356
+
+

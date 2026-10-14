@@ -1,0 +1,56 @@
+replicaCount: 2
+
+image:
+  repository: vinodhk92/devops-lab-api
+  tag: "1.0.4"
+  pullPolicy: Always
+
+imagePullSecrets:
+  - name: dockerhub-credentials
+
+service:
+  type: ClusterIP
+  port: 8080
+  targetPort: 5000
+
+configMap:
+  name: devops-lab-api-cfg
+
+secret:
+  name: devops-lab-api-secret
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "64Mi"
+  limits:
+    cpu: "200m"
+    memory: "128Mi"
+
+probes:
+  readiness:
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    timeoutSeconds: 2
+    failureThreshold: 3
+  liveness:
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 2
+    failureThreshold: 3
+
+hostPath:
+  enabled: true
+  path: /data
+  mountPath: /data
+
+ingress:
+  enabled: true
+  className: traefik
+  host: api.local
+  path: /
+  pathType: Prefix
+
+appConfig:
+  APP_VERSION: "1.0.0"
+  ENVIRONMENT: "dev"

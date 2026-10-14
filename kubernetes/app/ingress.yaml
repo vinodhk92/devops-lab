@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: devops-lab-api-ingress
+  namespace: dev
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: api.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: devops-lab-api-service
+                port:
+                  number: 8080
+          - path: /health
+            pathType: Prefix
+            backend:
+              service:
+                name: devops-lab-api-service
+                port:
+                  number: 8080
+          - path: /info
+            pathType: Prefix
+            backend:
+              service:
+                name: devops-lab-api-service
+                port:
+                  number: 8080
+  
