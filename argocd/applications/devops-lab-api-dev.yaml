@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: devops-lab-api-dev
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/vinodhk92/devops-lab.git
+    targetRevision: main
+    path: helm/devops-lab-api
+    helm:
+      releaseName: argocd-lab-api
+      valueFiles:
+        - values-dev.yaml
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd-lab
+
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=false
