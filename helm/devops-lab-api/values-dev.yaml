@@ -1,4 +1,4 @@
-replicaCount: 2
+replicaCount: 3
 image:
   repository: vinodhk92/devops-lab-api
   tag: "1.0.4"
