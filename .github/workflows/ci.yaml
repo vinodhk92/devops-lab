@@ -51,9 +51,6 @@ jobs:
     name: Push Image to Registry
     needs: build
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: app
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -70,7 +67,7 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v6
         with:
-          context: .
+          context: ./app
           push: true
           tags: |
             vinodhk92/devops-lab-api:${{ github.sha }}
