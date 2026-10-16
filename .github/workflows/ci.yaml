@@ -2,14 +2,32 @@ name: DevOps Lab CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 permissions:
   contents: read
+  pull-requests: read
 
 jobs:
+  changes:
+    name: Detect Changed Files
+    runs-on: ubuntu-latest
+    outputs:
+      app: ${{ steps.filter.outputs.app }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Detect application changes
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            app:
+              - 'app/**'
+
   test:
     name: Test Flask API
     runs-on: ubuntu-latest
@@ -19,7 +37,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -33,11 +51,9 @@ jobs:
 
   build:
     name: Build Docker Image
-    needs: test
+    needs: [changes, test]
+    if: needs.changes.outputs.app == 'true'
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: app
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -46,13 +62,18 @@ jobs:
         run: |
           docker build \
             -t devops-lab-api:${{ github.sha }} \
-            .
+            ./app
+
   push:
     name: Push Image to Registry
-    needs: build
+    needs: [changes, build]
+    if: >-
+      needs.changes.outputs.app == 'true' &&
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
@@ -72,4 +93,4 @@ jobs:
           tags: |
             vinodhk92/devops-lab-api:${{ github.sha }}
             vinodhk92/devops-lab-api:latest
-    
+
