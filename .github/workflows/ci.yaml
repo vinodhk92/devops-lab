@@ -31,4 +31,21 @@ jobs:
       - name: Run tests
         run: python -m pytest -v
 
+  build:
+    name: Build Docker Image
+    needs: test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build image
+        run: |
+          docker build \
+            -t devops-lab-api:${{ github.sha }} \
+            ./app
+
     
