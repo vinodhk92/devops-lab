@@ -1,7 +1,7 @@
 replicaCount: 3
 image:
   repository: vinodhk92/devops-lab-api
-  tag: "d0fb5d53201a5ff14960f2fe8dddc42518291637"
+  tag: "b62854776fc33652172eb1d0d2b83fef432b7b39"
   pullPolicy: Always
 ingress:
   enabled: false
