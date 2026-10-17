@@ -37,3 +37,4 @@ def test_version_returns_application_version_and_environment():
     assert response.json["application"] == "devops-lab-api"
     assert response.json["version"] == "1.0.0"
     assert response.json["environment"] == "local"
+    assert response.json["build"] == "unknown"

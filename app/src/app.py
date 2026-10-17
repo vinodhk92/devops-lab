@@ -32,7 +32,8 @@ def version():
     return jsonify({
         "application": "devops-lab-api",
         "version": os.getenv("APP_VERSION", "1.0.0"),
-        "environment": os.getenv("ENVIRONMENT", "local")
+        "environment": os.getenv("ENVIRONMENT", "local"),
+        "build": os.getenv("BUILD_SHA", "unknown")
     })
 
 if __name__ == "__main__":
