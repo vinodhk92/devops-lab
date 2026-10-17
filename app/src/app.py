@@ -27,6 +27,13 @@ def info():
         "version": os.getenv("APP_VERSION", "1.0.0")
     })
 
+@app.route("/version")
+def version():
+    return jsonify({
+        "application": "devops-lab-api",
+        "version": os.getenv("APP_VERSION", "1.0.0"),
+        "environment": os.getenv("ENVIRONMENT", "local")
+    })
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
