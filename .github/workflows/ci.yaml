@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 permissions:
-  contents: read
+  contents: write
   pull-requests: read
 
 jobs:
@@ -93,4 +93,47 @@ jobs:
           tags: |
             vinodhk92/devops-lab-api:${{ github.sha }}
             vinodhk92/devops-lab-api:latest
+
+  update-gitops:
+    name: Update GitOps Image Tag
+    needs: [changes, push]
+    if: >-
+      needs.changes.outputs.app == 'true' &&
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main' &&
+      needs.push.result == 'success'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Update Helm image tag
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          sed -i -E \
+            "s|^([[:space:]]*tag:).*|\1 \"${IMAGE_TAG}\"|" \
+            helm/devops-lab-api/values-dev.yaml
+
+          echo "Updated Helm image tag:"
+          grep -n 'tag:' helm/devops-lab-api/values-dev.yaml
+
+      - name: Commit and push GitOps change
+        run: |
+          git diff --check
+
+          if git diff --quiet; then
+            echo "No GitOps changes to commit."
+            exit 0
+          fi
+
+          git add helm/devops-lab-api/values-dev.yaml
+          git commit -m "chore(gitops): deploy image ${GITHUB_SHA}"
+          git push
 
